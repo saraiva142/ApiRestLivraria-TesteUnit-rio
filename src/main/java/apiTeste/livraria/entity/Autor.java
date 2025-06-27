@@ -1,5 +1,6 @@
 package apiTeste.livraria.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class Autor implements Serializable {
     private Long id;
     private String nome;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "autor")
     private List<Livro> livros = new ArrayList<>();
 
