@@ -1,4 +1,4 @@
-package apiTeste.livraria.entitie;
+package apiTeste.livraria.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,5 +18,8 @@ public class Livro implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
-    //private Autor autor;
+
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private Autor autor;
 }

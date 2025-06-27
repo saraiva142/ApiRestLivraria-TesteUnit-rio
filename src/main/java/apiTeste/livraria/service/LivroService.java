@@ -1,6 +1,6 @@
 package apiTeste.livraria.service;
 
-import apiTeste.livraria.entitie.Livro;
+import apiTeste.livraria.entity.Livro;
 import apiTeste.livraria.repository.LivroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package apiTeste.livraria.controller;
 
-import apiTeste.livraria.entitie.Livro;
+import apiTeste.livraria.entity.Livro;
 import apiTeste.livraria.service.LivroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
