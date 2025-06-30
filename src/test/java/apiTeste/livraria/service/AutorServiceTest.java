@@ -2,6 +2,7 @@ package apiTeste.livraria.service;
 
 import apiTeste.livraria.entity.Autor;
 import apiTeste.livraria.repository.AutorRepository;
+import apiTeste.livraria.service.exception.EntityNotFound;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -9,12 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.UUID;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AutorServiceTest {
@@ -28,14 +31,14 @@ class AutorServiceTest {
     @InjectMocks
     private AutorService autorService;
 
-    @BeforeEach
-    void setup(){
-        MockitoAnnotations.initMocks(this);
-    }
+//    @BeforeEach
+//    void setup(){
+//        MockitoAnnotations.initMocks(this);
+//    }
 
 
     @Nested
-    class createAutor {
+    class CreateAutor {
 
         @Test
         @DisplayName("Should create autor with success")
@@ -48,7 +51,7 @@ class AutorServiceTest {
             savedAutor.setId(1L);
             savedAutor.setNome("Michael Sullivan");
 
-            Mockito.when(autorRepository.save(autorToSave)).thenReturn(savedAutor);
+            when(autorRepository.save(autorToSave)).thenReturn(savedAutor);
 
             //Act
             Autor result = autorService.create(autorToSave);
@@ -57,7 +60,7 @@ class AutorServiceTest {
             assertNotNull(result);
             assertEquals(1L, result.getId());
             assertEquals("Michael Sullivan", result.getNome());
-            Mockito.verify(autorRepository, Mockito.times(1)).save(autorToSave);
+            verify(autorRepository, Mockito.times(1)).save(autorToSave);
         }
     }
 
@@ -66,7 +69,16 @@ class AutorServiceTest {
         @Test
         @DisplayName("Shoul delete by id with success")
         void deleteAutorByIdWithSuccess() {
+            //Arrange
+            Long autorIdToDelete = 1L;
 
+            doNothing().when(autorRepository).deleteById(autorIdToDelete);
+
+            //Act
+            autorService.delete(autorIdToDelete);
+
+            //Assert
+            verify(autorRepository, times(1)).deleteById(autorIdToDelete);
         }
 
     }
