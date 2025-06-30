@@ -148,6 +148,23 @@ class AutorServiceTest {
             verify(autorRepository, times(1)).findAll();
         }
 
+        @Test
+        @DisplayName("Should return empty list when there are no have autores")
+        void getAllAutoresIsEmptyWhenNoHaveAutor() {
+            //Arrange
+            List<Autor> emptyList = Arrays.asList();
+
+            when(autorRepository.findAll()).thenReturn(emptyList);
+
+            //Act
+            List<Autor> result = autorService.getAll();
+
+            //Assert
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+            verify(autorRepository, times(1)).findAll();
+        }
+
     }
 
 
