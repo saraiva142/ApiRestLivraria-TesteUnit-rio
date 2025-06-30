@@ -83,8 +83,46 @@ class AutorServiceTest {
 
     }
 
-    @Test
-    void getId() {
+    @Nested
+    class getId {
+
+        @Test
+        @DisplayName("Should return autor by id with success")
+        void getAutorByIdWithSuccess() {
+            //Arrange
+            Long id = 1L;
+            Autor autorExcepted = new Autor();
+            autorExcepted.setId(id);
+            autorExcepted.setNome("Joao");
+
+            when(autorRepository.findById(id)).thenReturn(Optional.of(autorExcepted));
+
+            //Act
+            Autor resultado = autorService.getId(id);
+
+            //Assert
+            assertNotNull(resultado);
+            assertEquals(autorExcepted.getId(), resultado.getId());
+            assertEquals(autorExcepted.getNome(), resultado.getNome());
+            verify(autorRepository, times(1)).findById(id);
+
+        }
+
+        @Test
+        @DisplayName("Should return error when autor not found")
+        void getAutorByIdWithErrorWhenNotFound() {
+            //Arrange
+            Long id = 99L;
+
+            when(autorRepository.findById(id)).thenReturn(Optional.empty());
+
+            //Act & Assert
+            EntityNotFound exception = assertThrows(EntityNotFound.class, () -> {
+                autorService.getId(id);
+            });
+            assertEquals("Autor de ID " + id + " não encontrado!", exception.getMessage());
+            verify(autorRepository, times(1)).findById(id);
+        }
     }
 
     @Test
