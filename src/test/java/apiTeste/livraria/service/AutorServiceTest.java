@@ -12,6 +12,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -125,9 +126,30 @@ class AutorServiceTest {
         }
     }
 
-    @Test
-    void getAll() {
+    @Nested
+    class getAll {
+        @Test
+        @DisplayName("Should return all autores with success")
+        void getAllAutoresWithSuccess() {
+            //Arrange
+            Autor autor1 = new Autor(1L, "Arnold Schwarzenegger");
+            Autor autor2 = new Autor(1L, "Squibiridibi");
+            List<Autor> autoresExpected = Arrays.asList(autor1, autor2);
+
+            when(autorRepository.findAll()).thenReturn(autoresExpected);
+
+            //Act
+            List<Autor> result = autorService.getAll();
+
+            //Assert
+            assertNotNull(result);
+            assertEquals(2, result.size());
+            assertEquals(autoresExpected, result);
+            verify(autorRepository, times(1)).findAll();
+        }
+
     }
+
 
     @Test
     void update() {
