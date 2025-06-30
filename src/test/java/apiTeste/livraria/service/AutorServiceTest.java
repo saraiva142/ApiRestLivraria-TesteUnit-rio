@@ -196,6 +196,26 @@ class AutorServiceTest {
             assertEquals(id, autorCaptor.getValue().getId());
         }
 
+        @Test
+        @DisplayName("Should not update when Autor is empty")
+        void notUpdateAutorWhenAutorIsEmpty() {
+            //Arrange
+            Long id = 99L;
+            Autor autor = new Autor(id, "Nome");
+
+            when(autorRepository.findById(id)).thenReturn(Optional.empty());
+
+            //Act & Assert
+            EntityNotFound exception = assertThrows(EntityNotFound.class, () -> {
+                autorService.update(autor);
+            });
+
+            assertEquals("Autor de ID " + id + " não encontrado!", exception.getMessage());
+            verify(autorRepository, times(1)).findById(id);
+            verify(autorRepository, never()).save(any(Autor.class));
+
+        }
+
     }
 
 }
