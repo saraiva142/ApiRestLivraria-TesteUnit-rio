@@ -167,8 +167,35 @@ class AutorServiceTest {
 
     }
 
+    @Nested
+    class update {
+        @Test
+        @DisplayName("Should update Autor with success")
+        void updateAutorWithSuccess() {
+            //Arrange
+            Long id = 1L;
+            Autor autor = new Autor(id, "Antigo");
+            Autor newAutor = new Autor(id, "Novo");
+            Autor updatedAutor = new Autor(id, "Novo");
 
-    @Test
-    void update() {
+            when(autorRepository.findById(id)).thenReturn(Optional.of(autor));
+            when(autorRepository.save(any(Autor.class))).thenReturn(updatedAutor);
+
+            //Act
+            Autor result = autorService.update(newAutor);
+
+            //Assert
+            assertNotNull(result);
+            assertEquals(id, result.getId());
+            assertEquals("Novo", result.getNome());
+            verify(autorRepository, times(1)).findById(id);
+
+            ArgumentCaptor<Autor> autorCaptor = ArgumentCaptor.forClass(Autor.class);
+            verify(autorRepository, times(1)).save(autorCaptor.capture());
+            assertEquals("Novo", autorCaptor.getValue().getNome());
+            assertEquals(id, autorCaptor.getValue().getId());
+        }
+
     }
+
 }
