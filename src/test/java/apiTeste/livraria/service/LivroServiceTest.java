@@ -192,6 +192,24 @@ class LivroServiceTest {
             verify(livroRepository, times(1)).findById(id);
         }
 
+        @Test
+        @DisplayName("Should throw Error Message when livro not found for update")
+        void updateLivroWhenNoHaveLivro() {
+            //Arrange
+            Long id = 99L;
+
+            Livro livro = new Livro();
+            livro.setId(id);
+
+            when(livroRepository.findById(id)).thenReturn(Optional.empty());
+
+            //Act & Assert
+            EntityNotFound exception = assertThrows(EntityNotFound.class, () -> {
+                livroService.update(livro);
+            });
+            assertEquals("Livro de ID " + id + " não encontrado!", exception.getMessage());
+            verify(livroRepository, times(1)).findById(id);
+        }
 
     }
 
