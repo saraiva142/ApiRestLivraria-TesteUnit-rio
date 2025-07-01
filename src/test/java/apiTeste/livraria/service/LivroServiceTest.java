@@ -141,6 +141,22 @@ class LivroServiceTest {
             verify(livroRepository, times(1)).findAll();
         }
 
+        @Test
+        @DisplayName("Should return empty list when there are no have livros")
+        void getAllLivrosIsEmptyWhenNoHaveLivros() {
+            //Arrange
+            List livros = new ArrayList();
+
+            when(livroRepository.findAll()).thenReturn(livros);
+
+            //Act
+            List<Livro> result = livroService.getAll();
+
+            //Assert
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+            verify(livroRepository, times(1)).findAll();
+        }
     }
 
 
