@@ -110,15 +110,39 @@ class LivroServiceTest {
             });
             assertEquals("Livro de ID " + id + " não encontrado!", exception.getMessage());
             verify(livroRepository, times(1)).findById(id);
+        }
+    }
 
+    @Nested
+    class getAll {
+        @Test
+        @DisplayName("Sould return all livros successfully")
+        void getAllLivrosWithSuccess() {
+            //Arrange
+            Livro livro1 = new Livro();
+            livro1.setId(1L);
+            livro1.setNome("Livro 1");
+
+            Livro livro2 = new Livro();
+            livro2.setId(1L);
+            livro2.setNome("Livro 2");
+
+            List<Livro> livros = Arrays.asList(livro1, livro2);
+
+            when(livroRepository.findAll()).thenReturn(livros);
+
+            //Act
+            List<Livro> result = livroService.getAll();
+
+            //Assert
+            assertNotNull(result);
+            assertEquals(2, result.size());
+            assertEquals(livros, result);
+            verify(livroRepository, times(1)).findAll();
         }
 
     }
 
-
-    @Test
-    void getAll() {
-    }
 
     @Test
     void update() {
