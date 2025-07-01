@@ -71,13 +71,50 @@ class LivroServiceTest {
             //Assert
             verify(livroRepository, times(1)).deleteById(id);
         }
+    }
+
+    @Nested
+    class getId {
+        @Test
+        @DisplayName("Should get livro by Id successfully")
+        void getLivroByIdWithSuccess() {
+            //Arrange
+            Long id = 1L;
+            Livro livro = new Livro();
+            livro.setNome("Java Livro");
+            livro.setId(id);
+
+            when(livroRepository.findById(id)).thenReturn(Optional.of(livro));
+
+            //Act
+            Livro result = livroService.getId(id);
+
+            //Assert
+            assertNotNull(result);
+            assertEquals(livro.getId(), result.getId());
+            assertEquals(livro.getNome(), result.getNome());
+            verify(livroRepository, times(1)).findById(id);
+        }
+
+        @Test
+        @DisplayName("Should throw EntityNotFound when livro not found by Id")
+        void getLivroByIdWhenNotFound() {
+            //Arrange
+            Long id = 99l;
+
+            when(livroRepository.findById(id)).thenReturn(Optional.empty());
+
+            //Act & Assert
+            EntityNotFound exception = assertThrows(EntityNotFound.class, () -> {
+                livroService.getId(id);
+            });
+            assertEquals("Livro de ID " + id + " não encontrado!", exception.getMessage());
+            verify(livroRepository, times(1)).findById(id);
+
+        }
 
     }
 
-
-    @Test
-    void getId() {
-    }
 
     @Test
     void getAll() {
