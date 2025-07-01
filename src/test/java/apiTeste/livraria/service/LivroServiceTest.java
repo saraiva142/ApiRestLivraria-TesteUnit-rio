@@ -159,8 +159,41 @@ class LivroServiceTest {
         }
     }
 
+    @Nested
+    class update {
+        @Test
+        @DisplayName("Should update livro with success")
+        void updateLivroWithSuccessfully() {
+            //Arrange
+            Long id = 1L;
 
-    @Test
-    void update() {
+            Livro livroOld = new Livro();
+            livroOld.setNome("Arnold Schwarzenegger");
+            livroOld.setId(id);
+
+            Livro livroNew = new Livro();
+            livroNew.setNome("Squibiridibi");
+            livroNew.setId(id);
+
+            Livro livroUpdated = new Livro();
+            livroUpdated.setNome("Squibiridibi");
+            livroUpdated.setId(id);
+
+            when(livroRepository.findById(id)).thenReturn(Optional.of(livroOld));
+            when(livroRepository.save(any(Livro.class))).thenReturn(livroUpdated);
+
+            //Act
+            Livro result = livroService.update(livroNew);
+
+            //Assert
+            assertNotNull(result);
+            assertEquals(id, result.getId());
+            assertEquals("Squibiridibi", result.getNome());
+            verify(livroRepository, times(1)).findById(id);
+        }
+
+
     }
+
+
 }
