@@ -56,11 +56,24 @@ class LivroServiceTest {
         }
     }
 
+    @Nested
+    class deleteLivro {
+        @Test
+        @DisplayName("Should delete livro with success")
+        void deleteLivroWithSuccess() {
+            //Arrange
+            Long id = 1L;
+            doNothing().when(livroRepository).deleteById(id);
 
+            //Act
+            livroService.delete(id);
 
-    @Test
-    void delete() {
+            //Assert
+            verify(livroRepository, times(1)).deleteById(id);
+        }
+
     }
+
 
     @Test
     void getId() {
