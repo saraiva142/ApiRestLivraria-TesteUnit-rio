@@ -1,5 +1,7 @@
 package apiTeste.livraria.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.Mockito.*;
@@ -20,6 +22,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import apiTeste.livraria.controller.AutorController; // Assumindo que você tem um AutorController
 import apiTeste.livraria.entity.Autor;
 import apiTeste.livraria.service.AutorService;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
 
 @WebMvcTest(AutorController.class)
 class AutorControllerTest {
@@ -126,10 +132,44 @@ class AutorControllerTest {
         }
     }
 
+    @Nested
+    class getAllAutores {
+        @Test
+        @DisplayName("Should get all autores successfully with Get request 200")
+        void getAllAutoresWithSuccess() throws Exception {
+            //Arrange
+            Long id = 1L;
 
-    @Test
-    void getAll() {
+            Autor autor1 = new Autor();
+            autor1.setId(1L);
+            autor1.setNome("Arnold Schwarzenegger");
+
+            Autor autor2 = new Autor();
+            autor2.setId(id);
+            autor2.setNome("Squibiridibi");
+
+            List<Autor> autores = Arrays.asList(autor1, autor2);
+
+            when(autorService.getAll()).thenReturn(List.of(autor1, autor2));
+
+            //Act & Assert
+
+            mockMvc.perform(get("/autor") // Simula uma requisição GET para /autor
+                    .contentType(MediaType.APPLICATION_JSON)) // Simula uma requisição GET para /autor
+                    .andExpect(status().isOk()) // Espera um status HTTP 200 OK
+                    .andExpect(jsonPath("$[0].id").value(1L)) // Verifica o ID do primeiro autor no JSON de resposta
+                    .andExpect(jsonPath("$[0].nome").value("Arnold Schwarzenegger")) // Verifica o nome do primeiro autor no JSON de resposta
+                    .andExpect(jsonPath("$[1].id").value(1L)) // Verifica o ID do segundo autor no JSON de resposta
+                    .andExpect(jsonPath("$[1].nome").value("Squibiridibi")); // Verifica o nome do segundo autor no JSON de resposta
+
+            assertNotNull(autores);
+            assertEquals(2, autores.size());
+            verify(autorService, times(1)).getAll(); // Verifica se o metodo getAll do Service foi chamado
+        }
+
     }
+
+
 
     @Test
     void update() {
