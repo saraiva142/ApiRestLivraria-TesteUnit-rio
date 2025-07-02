@@ -87,11 +87,45 @@ class AutorControllerTest {
         }
     }
 
+    @Nested
+    class getIdAutor {
+        @Test
+        @DisplayName("Should get autor by Id successfully with Get request 200")
+        void getIdAutorWithSucess() throws Exception {
+            //Arrange
+            Long id = 1L;
+            Autor autor = new Autor();
+            autor.setId(id);
+            autor.setNome("Arnold Schwarzenegger");
 
+            when(autorService.getId(id)).thenReturn(autor);
 
-    @Test
-    void getId() {
+            //Act & Assert
+            mockMvc.perform(get("/autor/{id}", id)
+                    .contentType(MediaType.APPLICATION_JSON)) // Simula uma requisição GET para /autor/{id}
+                    .andExpect(status().isOk()) // Espera um status HTTP 200 OK
+                    .andExpect(jsonPath("$.id").value(id)) // Verifica o ID no JSON de resposta
+                    .andExpect(jsonPath("$.nome").value("Arnold Schwarzenegger")); // Verifica o nome no JSON de resposta
+            verify(autorService, times(1)).getId(id);
+        }
+
+        @Test
+        @DisplayName("Should return error when autor not found with Get request 404")
+        void getIdAutorWithErrorWhenNotFound() throws Exception {
+            //Arrange
+            Long id = 99L;
+
+            when(autorService.getId(id)).thenThrow(new apiTeste.livraria.service.exception.EntityNotFound("Autor de ID " + id + " não encontrado!"));
+
+            //Act & Assert
+            mockMvc.perform(get("/autor/{id}", id)
+                    .contentType(MediaType.APPLICATION_JSON)) // Simula uma requisição GET para /autor/{id}
+                    .andExpect(status().isNotFound()) // Espera um status HTTP 404 Not Found
+                    .andExpect(jsonPath("$.message").value("Autor de ID " + id + " não encontrado!")); // Verifica a mensagem de erro no JSON de resposta
+            verify(autorService, times(1)).getId(id);
+        }
     }
+
 
     @Test
     void getAll() {
