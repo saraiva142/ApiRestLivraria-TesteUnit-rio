@@ -1,7 +1,6 @@
 package apiTeste.livraria.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.Mockito.*;
@@ -26,6 +25,7 @@ import apiTeste.livraria.service.AutorService;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @WebMvcTest(AutorController.class)
 class AutorControllerTest {
@@ -165,6 +165,26 @@ class AutorControllerTest {
             assertNotNull(autores);
             assertEquals(2, autores.size());
             verify(autorService, times(1)).getAll(); // Verifica se o metodo getAll do Service foi chamado
+        }
+
+        @Test
+        @DisplayName("Should return empty list when no autores found with Get request 200")
+        void getAllAutoresWithEmptyList() throws Exception {
+            //Arrange
+            List<Autor> autores = Arrays.asList();
+
+            when(autorService.getAll()).thenReturn(autores);
+
+            //Act & Assert
+            mockMvc.perform(get("/autor") // Simula uma requisição GET para /autor)
+                    .contentType(MediaType.APPLICATION_JSON)) // Define o tipo de conteúdo como JSON
+                    .andExpect(status().isOk()) // Espera um status HTTP 200 OK
+                    .andExpect(jsonPath("$").isEmpty()); // Verifica se a lista retornada está vazia
+
+            assertEquals(0, autores.size()); // Verifica se o tamanho da lista é 0
+            assertTrue(autores.isEmpty());
+            verify(autorService, times(1)).getAll(); // Verifica se o metodo getAll do Service foi chamado
+
         }
 
     }
