@@ -68,10 +68,26 @@ class AutorControllerTest {
         }
     }
 
+    @Nested
+    class deleteAutor {
+        @Test
+        @DisplayName("Should delete autor successfully with Delete request 204")
+        void deleteAutorByIdWithSuccess() throws Exception {
+            //Arrange
+            Long id = 1L;
 
-    @Test
-    void delete() {
+            doNothing().when(autorService).delete(id);
+
+            // Act & Assert
+            mockMvc.perform(delete("/autor/{id}", id) // Simula uma requisição DELETE para /autor/{id}
+                    .contentType(MediaType.APPLICATION_JSON)) // Define o tipo de conteúdo como JSON
+                    .andExpect(status().isNoContent()); // Espera um status HTTP 204 No Content
+
+            verify(autorService, times(1)).delete(id); // Verifica se o metodo delete do Service foi chamado com o ID correto
+        }
     }
+
+
 
     @Test
     void getId() {
