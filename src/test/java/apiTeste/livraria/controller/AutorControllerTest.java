@@ -187,11 +187,35 @@ class AutorControllerTest {
 
         }
 
+        @Nested
+        class updateAutor {
+            @Test
+            @DisplayName("Should update autor successfully with Put request 200 by id")
+            void updateAutorWithIdSucessfully() {
+                Long id = 1L;
+
+                Autor autorOld = new Autor();
+                autorOld.setId(id);
+                autorOld.setNome("Arnold Schwarzenegger");
+
+                Autor autorNew = new Autor();
+                autorNew.setId(id);
+                autorNew.setNome("Squibiridibi");
+
+                Autor autorUpdated = new Autor();
+                autorUpdated.setId(id);
+                autorUpdated.setNome("Squibiridibi");
+
+                when(autorService.getId(id)).thenReturn(autorOld);
+                when(autorService.update(any(Autor.class))).thenReturn(autorUpdated);
+
+                //Act & Assert
+            }
+
+        }
+
     }
 
 
 
-    @Test
-    void update() {
-    }
 }
