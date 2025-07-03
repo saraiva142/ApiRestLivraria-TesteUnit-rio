@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.Mockito.*;
 
+import apiTeste.livraria.service.exception.EntityNotFound;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -222,7 +223,27 @@ class AutorControllerTest {
                 assertTrue(autorUpdated.getId().equals(id));
             }
 
+            @Test
+            @DisplayName("Should return error when autor not found with Put request 404")
+            void updateAutorWithErrorWhenNotFound() throws Exception {
+                //Arrange
+                Long id = 99L;
 
+                Autor autorNew = new Autor();
+                autorNew.setNome("Arnold Schwarzenegger");
+
+                doThrow(new EntityNotFound("Autor de ID " + id + " não encontrado!"))
+                        .when(autorService).update(any(Autor.class));
+
+                //Act & Assert
+                mockMvc.perform(put("/autor/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(autorNew)))
+                        .andExpect(status().isNotFound())
+                        .andExpect(jsonPath("$.message").value("Autor de ID " + id + " não encontrado!"));
+
+                verify(autorService, times(1)).update(any(Autor.class));
+            }
 
         }
 
