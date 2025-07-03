@@ -194,11 +194,34 @@ class LivroControllerTest {
         }
     }
 
-    @Test
-    void getAll() {
+    @Nested
+    class updateLivro {
+        @Test
+        @DisplayName("Should update livro with success")
+        void updateLivroWithSuccess() throws Exception {
+            //Arrange
+            Long id = 1L;
+            Livro livroOld = new Livro();
+            livroOld.setNome("Livro Java Antigo");
+            livroOld.setId(id);
+
+            Livro livroUpdated = new Livro();
+            livroUpdated.setId(id);
+            livroUpdated.setNome("Livro Java Atualizado");
+
+            when(livroService.update(any(Livro.class))).thenReturn(livroUpdated);
+
+            //Act & Assert
+            mockMvc.perform(put("/livros/{id}", id)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(livroUpdated)))
+                    .andExpect(jsonPath("$.id").value(id))
+                    .andExpect(jsonPath("$.nome").value("Livro Java Atualizado"));
+
+            verify(livroService, times(1)).update(any(Livro.class));
+            assertEquals("Livro Java Atualizado", livroUpdated.getNome());
+            assertEquals(livroOld.getId(), livroUpdated.getId());
+        }
     }
 
-    @Test
-    void update() {
-    }
 }
