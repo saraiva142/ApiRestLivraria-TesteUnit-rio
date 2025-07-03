@@ -191,7 +191,7 @@ class AutorControllerTest {
         class updateAutor {
             @Test
             @DisplayName("Should update autor successfully with Put request 200 by id")
-            void updateAutorWithIdSucessfully() {
+            void updateAutorWithIdSucessfully() throws Exception {
                 Long id = 1L;
 
                 Autor autorOld = new Autor();
@@ -210,7 +210,19 @@ class AutorControllerTest {
                 when(autorService.update(any(Autor.class))).thenReturn(autorUpdated);
 
                 //Act & Assert
+                mockMvc.perform(put("/autor/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(autorNew)))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.id").value(id))
+                        .andExpect(jsonPath("$.nome").value("Squibiridibi"));
+
+                verify(autorService, times(1)).update(any(Autor.class));
+                assertEquals("Squibiridibi", autorUpdated.getNome());
+                assertTrue(autorUpdated.getId().equals(id));
             }
+
+
 
         }
 
