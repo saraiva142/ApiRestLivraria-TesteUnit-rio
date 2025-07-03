@@ -138,8 +138,42 @@ class LivroControllerTest {
         }
     }
 
-    @Test
-    void getId() {
+    @Nested
+    class getAllLivros {
+
+        @Test
+        @DisplayName("Should get all livros with success")
+        void getAllLivrosWithSuccess() throws Exception {
+            //Arrange
+            Long id = 1L;
+            Livro livro1 = new Livro();
+            livro1.setId(id);
+            livro1.setNome("Bibliografia do Arnold Schwarzenegger");
+
+            Livro livro2 = new Livro();
+            livro2.setId(id);
+            livro2.setNome("Bibliografia do Bruce Lee");
+
+            List<Livro> livros = Arrays.asList(livro1, livro2);
+
+            when(livroService.getAll()).thenReturn(livros);
+
+            //Act & Assert
+            mockMvc.perform(get("/livros")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$[0].id").value(id))
+                    .andExpect(jsonPath("$[0].nome").value("Bibliografia do Arnold Schwarzenegger"))
+                    .andExpect(jsonPath("$[1].id").value(id))
+                    .andExpect(jsonPath("$[1].nome").value("Bibliografia do Bruce Lee"));
+
+            assertEquals(livro1.getNome(), livros.get(0).getNome());
+            assertEquals(livro1.getId(), livros.get(0).getId());
+            assertEquals(livro2.getNome(), livros.get(1).getNome());
+            assertEquals(livro2.getId(), livros.get(1).getId());
+            verify(livroService, times(1)).getAll();
+
+        }
     }
 
     @Test
