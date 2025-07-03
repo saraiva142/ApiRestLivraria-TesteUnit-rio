@@ -92,7 +92,6 @@ class LivroControllerTest {
                     .andExpect(status().isNoContent());
 
             verify(livroService, times(1)).delete(id);
-
         }
     }
 
@@ -117,6 +116,23 @@ class LivroControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value(id))
                     .andExpect(jsonPath("$.nome").value("Livro Java"));
+
+            verify(livroService, times(1)).getId(id);
+        }
+
+        @Test
+        @DisplayName("Should return 404 when livro not found by id")
+        void getByIdLivroWhenIDNotFound() throws Exception {
+            //Arrange
+            Long id = 99L;
+
+            when(livroService.getId(id)).thenThrow(new EntityNotFound("Livro de ID " + id + " não encontrado."));
+
+            //Act & Assert
+            mockMvc.perform(get("/livros/{id}", id)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message").value("Livro de ID " + id + " não encontrado."));
 
             verify(livroService, times(1)).getId(id);
         }
