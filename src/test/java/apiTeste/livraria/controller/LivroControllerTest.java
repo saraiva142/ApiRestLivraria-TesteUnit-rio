@@ -222,6 +222,29 @@ class LivroControllerTest {
             assertEquals("Livro Java Atualizado", livroUpdated.getNome());
             assertEquals(livroOld.getId(), livroUpdated.getId());
         }
+
+        @Test
+        @DisplayName("Should return 404 when livro to update not found")
+        void updateLivroWhenNotFoundById() throws Exception {
+            //Arrange
+            Long id = 99L;
+            Livro livroUpdated = new Livro();
+            livroUpdated.setId(id);
+            livroUpdated.setNome("Livro Java Atualizado");
+
+            when(livroService.update(any(Livro.class))).thenThrow(new EntityNotFound("Livro de ID " + id + " não encontrado."));
+
+            //Act & Assert
+            mockMvc.perform(put("/livros/{id}", id)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(livroUpdated)))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message").value("Livro de ID " + id + " não encontrado."));
+
+            verify(livroService, times(1)).update(any(Livro.class));
+            assertEquals("Livro Java Atualizado", livroUpdated.getNome());
+            assertEquals(id, livroUpdated.getId());
+        }
     }
 
 }
