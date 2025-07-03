@@ -172,7 +172,25 @@ class LivroControllerTest {
             assertEquals(livro2.getNome(), livros.get(1).getNome());
             assertEquals(livro2.getId(), livros.get(1).getId());
             verify(livroService, times(1)).getAll();
+        }
 
+        @Test
+        @DisplayName("Should return empty list when no livros found")
+        void getAllLivrosWhenListIsEmpty() throws Exception {
+            //Arrange
+            List<Livro> livros = Arrays.asList();
+
+            when(livroService.getAll()).thenReturn(livros);
+
+            //Act & Assert
+            mockMvc.perform(get("/livros")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$").isEmpty());
+
+            verify(livroService, times(1)).getAll();
+            assertTrue(livros.isEmpty());
+            assertEquals(0, livros.size());
         }
     }
 
