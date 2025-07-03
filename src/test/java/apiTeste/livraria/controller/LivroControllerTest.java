@@ -1,5 +1,10 @@
 package apiTeste.livraria.controller;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.*;
+
 import apiTeste.livraria.entity.Livro;
 import apiTeste.livraria.service.LivroService;
 import apiTeste.livraria.service.exception.EntityNotFound;
@@ -25,19 +30,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @WebMvcTest(LivroController.class)
 class LivroControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @MockBean
     private LivroService livroService;
 
     @Autowired
@@ -74,8 +73,31 @@ class LivroControllerTest {
         }
     }
 
+    @Nested
+    class getIdLivro {
 
+        @Test
+        @DisplayName("Should get livro by id with success")
+        void getIdLivroWithSuccess() throws Exception {
+            //Arrange
+            Long id = 1L;
 
+            Livro livro = new Livro();
+            livro.setId(id);
+            livro.setNome("Livro Java");
+
+            when(livroService.getId(id)).thenReturn(livro);
+
+            //Act & Assert
+            mockMvc.perform(get("/livros/{id}", id)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id").value(id))
+                    .andExpect(jsonPath("$.nome").value("Livro Java"));
+
+            verify(livroService, times(1)).getId(id);
+        }
+    }
 
     @Test
     void getId() {
