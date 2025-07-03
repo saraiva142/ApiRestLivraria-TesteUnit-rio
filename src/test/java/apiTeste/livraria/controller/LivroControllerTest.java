@@ -74,6 +74,29 @@ class LivroControllerTest {
     }
 
     @Nested
+    class deleteLivro {
+        @Test
+        @DisplayName("Should delete livro with success by id")
+        void deleteLivroWithSuccessBYId() throws Exception {
+            //Arrange
+            Long id = 1L;
+
+            Livro livro = new Livro();
+            livro.setId(id);
+
+            doNothing().when(livroService).delete(id);
+
+            //Act & Assert
+            mockMvc.perform(delete("/livros/{id}", id)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNoContent());
+
+            verify(livroService, times(1)).delete(id);
+
+        }
+    }
+
+    @Nested
     class getIdLivro {
 
         @Test
