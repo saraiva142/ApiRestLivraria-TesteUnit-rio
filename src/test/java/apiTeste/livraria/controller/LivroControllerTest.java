@@ -1,18 +1,81 @@
 package apiTeste.livraria.controller;
 
+import apiTeste.livraria.entity.Livro;
+import apiTeste.livraria.service.LivroService;
+import apiTeste.livraria.service.exception.EntityNotFound;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import apiTeste.livraria.controller.AutorController; // Assumindo que você tem um AutorController
+import apiTeste.livraria.entity.Autor;
+import apiTeste.livraria.service.AutorService;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(LivroController.class)
 class LivroControllerTest {
 
-    @Test
-    void create() {
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockitoBean
+    private LivroService livroService;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Nested
+    class createLivro {
+
+        @Test
+        @DisplayName("Should create livro with success")
+        void createLivroWithSuccess() throws Exception {
+            //Arrange
+            Long id = 1L;
+            Livro livro = new Livro();
+            livro.setId(id);
+            livro.setNome("Livro Java");
+
+            Livro savedLivro = new Livro();
+            savedLivro.setId(id);
+            savedLivro.setNome("Livro Java");
+
+            when(livroService.create(any(Livro.class))).thenReturn(savedLivro);
+
+            //Act & Assert
+            mockMvc.perform(post("/livros")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(livro)))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.id").value(id))
+                    .andExpect(jsonPath("$.nome").value("Livro Java"));
+
+            verify(livroService, times(1)).create(any(Livro.class));
+
+        }
     }
 
-    @Test
-    void delete() {
-    }
+
+
 
     @Test
     void getId() {
